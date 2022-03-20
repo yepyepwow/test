@@ -1,0 +1,491 @@
+<head>
+    <meta charset="UTF-8">
+
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1"> добавляем мета тег viewport -->
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+
+
+
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <script>
+        window.onload = function () {
+            document.body.classList.add('loaded');
+            
+            setTimeout(() => {  document.querySelector("lottie-player").play(); }, 200);
+        }
+        document.addEventListener("DOMContentLoaded", () => {
+            
+            var c = document.getElementById('container');
+            var f = ["main", "contacts", "blank", "portfolio"];
+            const slider = document.getElementById('card');
+            f.forEach(function (e) {
+                document.getElementById(e).onclick = function () {
+                    if (!(c.classList.contains("scaled"))) {
+                        c.classList.add("scaled", e);
+                        let cn = 'card-' + e;
+                        document.getElementsByClassName(cn)[0].classList.remove('hidden');
+
+                        var listener = function () {
+                            if (c.classList.contains("scaled")) {
+                                slider.style.zIndex = 101;  // событие клика в том числе при свайпе, поэтому проверяем увеличен ли фрагмент
+                                slider.classList.remove("hidden");
+                                document.querySelector("lottie-player").play();
+                                slider.removeEventListener("webkitTransitionEnd", listener, false);
+                                console.log("click");
+                            };
+                        }
+                        c.addEventListener("webkitTransitionEnd", listener, false);
+                    }
+                }
+            });
+
+
+            let tsY, teY = 0
+            function handleGesture() {
+                if (tsY - teY > 150) {
+                    if (c.classList.contains("scaled")) {
+                        let pp = c.classList[3];
+                        pp = 'card-' + pp;
+                        console.log(document.getElementsByClassName(pp + 'mm'));
+                        let nn = document.getElementsByClassName(pp)[0];
+                        document.getElementsByClassName(pp)[0].classList.add("hidden");
+                        c.classList.remove("scaled", "main", "contacts", "blank", "portfolio");
+                        document.querySelector("lottie-player").stop();
+                        slider.classList.add("hidden");
+                        var listener = function () {
+                            if (!(c.classList.contains("scaled"))) {   // событие клика в том числе при свайпе, поэтому проверяем увеличен ли фрагмент
+                                slider.style.zIndex = -1;
+                                slider.removeEventListener("webkitTransitionEnd", listener, false);
+                                console.log("click");
+                            };
+                        }
+                        c.addEventListener("webkitTransitionEnd", listener, false);
+                    }
+
+                }
+                tsY, teY = 0;
+            }
+
+
+            slider.addEventListener('touchstart', e => {
+
+                if (event.touches.length > 1) {
+                    event.preventDefault()
+                }
+                tsY = e.changedTouches[0].clientY;
+                event.stopPropagation();
+            })
+            slider.addEventListener('touchend', e => {
+                teY = e.changedTouches[0].clientY;
+                handleGesture()
+                event.stopPropagation()
+
+            })
+
+            document.body.addEventListener('touchmove', function (event) {
+                event.preventDefault();
+            }, {
+                passive: false,
+                useCapture: false
+            });
+
+
+
+        });
+
+        let vh = window.innerHeight * 0.01;
+        // Then we set the value in the --vh custom property to the root of the document
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+        window.addEventListener('resize', () => {
+            // We execute the same script as before
+            let vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        });
+    </script>
+
+</head>
+
+<body>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
+            --sc: 12;
+
+        }
+
+
+
+        .unselectable {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .back {
+            position: relative;
+            width: 100%;
+            z-index: -99;
+            -webkit-perspective: 1000;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+        }
+
+        .printfile {
+            position: relative;
+            z-index: 99;
+        }
+
+        .frame {
+
+            /* border: 1px double black; */
+        }
+
+        .maincard {
+            z-index: 101;
+            border: 1px double black;
+            width: 98vw;
+            height: 100vh;
+            /* Fallback for browsers that do not support Custom Properties */
+            height: calc(var(--vh, 1vh) * 98);
+            top: 1vh;
+            left: 1vw;
+            position: absolute;
+            opacity: 1;
+            transition: opacity .75s ease-in-out;
+        }
+
+        .hidden {
+            opacity: 0;
+            /* z-index: -1; */
+
+        }
+
+        #card.maincard {
+            transition: opacity .75s ease-in-out;
+
+        }
+
+        .ab {
+            position: absolute;
+            transition: opacity .25s ease-in-out;
+        }
+        .inside-card {
+
+            position: fixed;
+            right: 3vw;
+            bottom: 7vh;
+            width: 75vw;
+            height: 65vh;
+
+        }
+
+        .preloader {
+            /*фиксированное позиционирование*/
+            position: fixed;
+            /* координаты положения */
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            /* фоновый цвет элемента */
+            background: #252525;
+            /* размещаем блок над всеми элементами на странице (это значение должно быть больше, чем у любого другого позиционированного элемента на странице) */
+            z-index: 1001;
+        }
+
+        .preloader__row {
+            position: relative;
+            top: 50%;
+            left: 50%;
+            width: 70px;
+            height: 70px;
+            margin-top: -35px;
+            margin-left: -35px;
+            text-align: center;
+            animation: preloader-rotate 2s infinite linear;
+        }
+
+        .preloader__item {
+            position: absolute;
+            display: inline-block;
+            top: 0;
+            background-color: #919191;
+            border-radius: 100%;
+            width: 35px;
+            height: 35px;
+            animation: preloader-bounce 2s infinite ease-in-out;
+        }
+
+        .preloader__item:last-child {
+            top: auto;
+            bottom: 0;
+            animation-delay: -1s;
+        }
+
+        @keyframes preloader-rotate {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes preloader-bounce {
+
+            0%,
+            100% {
+                transform: scale(0);
+            }
+
+            50% {
+                transform: scale(1);
+            }
+        }
+
+        .loaded_hiding .preloader {
+            transition: 0.3s opacity;
+            opacity: 0;
+        }
+
+        .loaded .preloader {
+            display: none;
+        }
+
+
+        @media screen and (orientation: landscape) {
+            .container {
+                top: 7.5vh;
+                height: 85vh;
+                width: 113vh;
+                position: relative;
+                margin: 0 auto;
+                left: 0;
+                right: 0;
+                transition: transform 1s;
+            }
+
+            #container.scaled.main {
+                transform: scale(var(--sc)) translate(16.5vh, 13vh);
+            }
+
+            #container.scaled.contacts {
+                transform: scale(var(--sc)) translate(-14.5vh, 13vh);
+            }
+
+            #container.scaled.blank {
+                transform: scale(var(--sc)) translate(18vh, -13vh);
+            }
+
+            #container.scaled.portfolio {
+                transform: scale(var(--sc)) translate(-18vh, -13vh);
+            }
+
+            .table {
+                display: table;
+                align-items: center;
+                justify-content: center;
+                transition: 3s;
+                height: 100%;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+
+
+            .printfile {
+                position: absolute;
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+                height: 100%;
+                object-fit: cover;
+            }
+
+
+            .frame {
+                position: absolute;
+                width: 31vh;
+                height: 28vh;
+                display: table-cell;
+            }
+
+            .main.frame {
+                top: 13vh;
+                left: 24.5vh;
+            }
+
+            .contacts.frame {
+                top: 13vh;
+                left: 55.5vh;
+            }
+
+            .blank.frame {
+                top: 44vh;
+                left: 27vh;
+            }
+
+            .portfolio.frame {
+                top: 44vh;
+                left: 59vh;
+            }
+
+        }
+
+
+
+        @media screen and (orientation: portrait) {
+            .container {
+                top: calc(50% - 31.5vw);
+                width: 85vw;
+                height: 63.75vw;
+                position: relative;
+                margin: 0 auto;
+                left: 0;
+                right: 0;
+                transition: transform 1s;
+            }
+
+            #container.scaled.main {
+                transform: scale(var(--sc)) translate(11vw, 11vw);
+            }
+
+            #container.scaled.contacts {
+                transform: scale(var(--sc)) translate(-11vw, 11vw);
+            }
+
+            #container.scaled.blank {
+                transform: scale(var(--sc)) translate(7vw, -12vw);
+            }
+
+            #container.scaled.portfolio {
+                transform: scale(var(--sc)) translate(-11vw, -12vw);
+            }
+
+
+            .table {
+                display: table;
+                align-items: center;
+                justify-content: center;
+                height: 100%;
+                width: 85vw;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .printfile {
+                position: absolute;
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+                width: 100%;
+                object-fit: cover;
+            }
+
+            .frame {
+                display: table-cell;
+                position: absolute;
+                width: 24vw;
+                height: 20vw;
+            }
+
+            .main.frame {
+                top: 10vw;
+                left: 18vw;
+            }
+
+            .contacts.frame {
+                top: 10vw;
+                left: 42vw;
+            }
+
+            .blank.frame {
+                top: 33vw;
+                left: 20vw;
+            }
+
+            .portfolio.frame {
+                top: 33vw;
+                left: 44vw;
+            }
+        }
+
+
+        @media (min-width: 1800px) {}
+
+        /* Large desktops and laptops */
+        @media (min-width: 1200px) {}
+
+        /* Landscape tablets and medium desktops */
+        @media (min-width: 992px) and (max-width: 1199px) {}
+
+        /* Portrait tablets and small desktops */
+        @media (min-width: 768px) and (max-width: 991px) {}
+
+        /* Landscape phones and portrait tablets */
+        @media (max-width: 767px) {}
+
+        /* Portrait phones and smaller */
+        @media (max-width: 480px) {}
+
+        /* Iphone 5 */
+        @media (max-width: 320px) {}
+    </style>
+    <div class="preloader">
+        <div class="preloader__row">
+            <div class="preloader__item"></div>
+            <div class="preloader__item"></div>
+        </div>
+    </div>
+    <div id="card" class="maincard">
+        <div class="card-main ab">
+            <div class="inside-card">
+                <lottie-player src="https://assets8.lottiefiles.com/private_files/lf30_qmimuwcu.json" background="transparent"
+                speed="1" style=" height: 300px;"></lottie-player>
+                <p>Здесь расположен текст из первой карточки, вероятно что-то крайне важное и интересноеЗдесь расположен текст из первой карточки, вероятно что-то крайне важное и интересноеЗдесь расположен текст из первой карточки, вероятно что-то крайне важное и интересноеЗдесь расположен текст из первой карточки, вероятно что-то крайне важное и интересное</p>
+            </div>
+            
+        </div>
+        <div class="card-portfolio ab hidden">
+            <p>portfolio</p>
+        </div>
+        <div class="card-contacts ab hidden">
+            <p>contacts</p>
+        </div>
+    </div>
+    <div id="container" class="container scaled unselectable main">
+        <img class="printfile" src="http://dotbydot.ru/wp-content/uploads/2022/02/16_508_8-1.png"></img>
+        <div class="table">
+            <div id="main" class="main frame" style="z-index:99">
+
+            </div>
+            <div class="main frame" style="z-index:-99">
+                <img class="back" src="http://dotbydot.ru/wp-content/uploads/2022/02/16_507.jpg"></img>
+            </div>
+            <div id="contacts" class="contacts frame" style="z-index:99"></div>
+            <div class="contacts frame" style="z-index:-99">
+                <img class="back" src="http://dotbydot.ru/wp-content/uploads/2022/02/16_507.jpg"></img>
+            </div>
+
+            <div id="blank" class="blank frame" style="z-index:99"></div>
+            <div class="blank frame" style="z-index:-99">
+                <img class="back" src="http://dotbydot.ru/wp-content/uploads/2022/02/16_507.jpg"></img>
+            </div>
+            <div id="portfolio" class="portfolio frame" style="z-index:99"></div>
+            <div class="portfolio frame" style="z-index:-99">
+                <img class="back" src="http://dotbydot.ru/wp-content/uploads/2022/02/16_507.jpg"></img>
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+</body>
